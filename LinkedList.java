@@ -89,22 +89,26 @@ public class LinkedList {
 		}
 		Node current = new Node(block);
 		if(index==0){
-			current.next = this.first;
-			first = current;
+			addFirst(block);
+		}
+		else if(index==size-1){
+			addLast(block);
 		}
 		else{
-			Node prev = getNode(index);
-			if(size-1 == index){
-				prev.next = current;
-				last = current;
+			if(this.size ==0){
+				first = current;
+				last = first;
+				size++;
 			}
 			else{
+			Node prev = getNode(index);
 			Node after = prev.next;
 			prev.next = current;
 			current.next= after;
+			size++;
 			}
 		}
-		size++;
+		
 	}
 
 
@@ -121,8 +125,14 @@ public class LinkedList {
 	 */
 	public void addLast(MemoryBlock block) {
 		if(size==0){
-			add(0,block);
+			first = new Node(block);
+			last = first;
 		}
+		else{
+		last.next = new Node(block);
+		}
+		size++;
+	
 	}
 	
 	/**
@@ -134,9 +144,16 @@ public class LinkedList {
 	 */
 	public void addFirst(MemoryBlock block) {
 		Node current = new Node(block);
-		current.next = first;
-		this.first = current;
-		size++;
+		if(size==0){
+			first = current;
+			last = first;
+			size++;
+		}
+		else{
+			current.next = first;
+			first = current;
+			size++;
+		}
 	}
 
 	/**
