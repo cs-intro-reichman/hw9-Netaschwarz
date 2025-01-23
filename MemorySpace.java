@@ -60,22 +60,22 @@ public class MemorySpace {
 	public int malloc(int length) {		
 		ListIterator itr = freeList.iterator();
 		int index =0;
-		while(itr.hasNext()&& itr.current.block.length<length){
-			if(itr.current.block.length >= length){
-				MemoryBlock block1 = new MemoryBlock(itr.current.block.baseAddress,length);
-				allocatedList.addLast(block1);
-				if(itr.current.block.length ==0){
-					freeList.remove(itr.current.block);
+		while(itr.hasNext()){
+			MemoryBlock free = itr.next();
+			if(free.length >= length){
+				MemoryBlock allocated = new MemoryBlock(free.baseAddress,length);
+				allocatedList.addLast(allocated);
+				if(free.length ==length){
+					freeList.remove(free);
 				}
 				else{
-					MemoryBlock old = new MemoryBlock(itr.current.block.baseAddress+length,itr.current.block.length-length);
+					MemoryBlock old = new MemoryBlock(free.baseAddress+length,free.length-length);
 					freeList.add(index,old);
-					freeList.remove(itr.current.block);
+					freeList.remove(free);
 				}
-				return block1.baseAddress;
+				return allocated.baseAddress;
 
 			}
-		itr.next();
 		index++;
 		}
 		return -1;
@@ -95,10 +95,12 @@ public class MemorySpace {
 					"index must be between 0 and size");
 		}
 		ListIterator itr = allocatedList.iterator();
-		while(itr.hasNext()&&itr.current.block.baseAddress != address){
-			if(itr.current.block.baseAddress==address){
-				freeList.addLast(itr.current.block);
-				allocatedList.remove(itr.current.block);
+		while(itr.hasNext()){
+			MemoryBlock block1= itr.next();
+			if(block1.baseAddress==address){
+				freeList.addLast(block1);
+				allocatedList.remove(block1);
+				return;
 			}
 		}
 	}
