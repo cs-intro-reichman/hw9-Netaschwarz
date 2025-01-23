@@ -62,6 +62,7 @@ public class LinkedList {
 		int i=0;
 		while(i<index && current.next!=null){
 			current= current.next;
+			i++;
 		}
 		return current;
 	}
@@ -232,7 +233,7 @@ public class LinkedList {
 			}
 			else{
 			Node prev = getNode(index-1);
-			prev.next = getNode(index+1);
+			prev.next = prev.next.next;
 			size--;
 		}
 	}
