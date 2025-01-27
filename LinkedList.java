@@ -206,37 +206,32 @@ public class LinkedList {
 	 *        the node that will be removed from this list
 	 */
 	public void remove(Node node) {
-		if(node ==null){
-			throw new IllegalArgumentException(
-				" NullPointerException!");
-		}
-		int index = indexOf(node.block);
-		if(index ==-1){
-			throw new IllegalArgumentException(
-				"index must be between 0 and size");
-		}
-		if(size==1){
-			first=null;
-			last= first;
-			size--;
-		}
-		else{
-			if(index==0){
-			first = first.next;
-			size--;
-			}
-			else if(index==size-1){
-			Node prev = getNode(index-1);
-			prev.next = null;
-			last = prev;
-			size--;
-			}
-			else{
-			Node prev = getNode(index-1);
-			prev.next = prev.next.next;
-			size--;
-		}
-	}
+		if (node == null || size == 0) {
+            throw new IllegalArgumentException(" NullPointerException!");
+        }
+        if (node == first) {
+            first = first.next;
+            if (size == 1) {
+                last = null;
+            }
+        }
+        else {
+            Node current = first;
+            while (current != null && current.next != node) {
+                current = current.next;
+            }
+    
+            if (current != null) { 
+                current.next = node.next;
+                if (node == last) { 
+                    last = current;
+                }
+            } else {
+                throw new IllegalArgumentException("Node not found in the list.");
+            }
+        }
+    
+        size--;
 	}
 
 	/**
@@ -284,14 +279,19 @@ public class LinkedList {
 	 * A textual representation of this list, for debugging.
 	 */
 	public String toString() {
-		if(this.size==0){
-			return "()";
-		}
-		String str ="(";
-		ListIterator itr = this.iterator();
-		while(itr.current != null){
-			str += itr.current.block + " ";
-		}
-		return str.substring(0,str.length()-1)+ ")";
-	}
+		String s = "";
+
+Node current = first;
+
+while (current != null) {
+
+s = s + current.block + " ";
+
+current = current.next;
+
+}
+
+return s;
+
+}
 }
