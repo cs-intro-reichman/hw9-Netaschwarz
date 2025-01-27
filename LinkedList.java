@@ -95,17 +95,11 @@ public class LinkedList {
 		if(index==0){
 			addFirst(block);
 		}
-		else if(index==size-1){
+		else if(index==size){
 			addLast(block);
 		}
 		else{
-			if(this.size ==0){
-				first = current;
-				last = first;
-				size++;
-			}
-			else{
-			Node prev = getNode(index-1);
+			Node prev = getNode(index - 1);
 			Node after = prev.next;
 			prev.next = current;
 			current.next= after;
@@ -113,7 +107,7 @@ public class LinkedList {
 			}
 		}
 		
-	}
+	
 
 
 
@@ -172,7 +166,7 @@ public class LinkedList {
 	 *         if index is negative or greater than or equal to size
 	 */
 	public MemoryBlock getBlock(int index) {
-		if(index<0 || index>size){
+		if(index<0 || index>size||size==0){
 			throw new IllegalArgumentException(
 			"index must be between 0 and size");
 			
@@ -214,7 +208,7 @@ public class LinkedList {
 	public void remove(Node node) {
 		if(node ==null){
 			throw new IllegalArgumentException(
-				"NullPointerException!");
+				" NullPointerException!");
 		}
 		int index = indexOf(node.block);
 		if(index ==-1){

@@ -59,27 +59,27 @@ public class MemorySpace {
 	 */
 	public int malloc(int length) {		
 		ListIterator itr = freeList.iterator();
-		int index =0;
-		while(itr.hasNext()){
-			MemoryBlock free = itr.next();
-			if(free.length >= length){
-				MemoryBlock allocated = new MemoryBlock(free.baseAddress,length);
-				allocatedList.addLast(allocated);
-				if(free.length ==length){
-					freeList.remove(free);
-				}
-				else{
-					MemoryBlock old = new MemoryBlock(free.baseAddress+length,free.length-length);
-					freeList.add(index,old);
-					freeList.remove(free);
-				}
-				return allocated.baseAddress;
-
-			}
-		index++;
+		while(itr.current!= null && itr.current.block.length < length){
+			itr.next();
+			// System.err.println(itr.current);
 		}
-		return -1;
-	}
+		if(itr.current == null){
+			return -1;
+		}
+		MemoryBlock allocated = new MemoryBlock(itr.current.block.baseAddress,length);
+		allocatedList.addLast(allocated);
+		if(itr.current.block.length ==length){
+			freeList.remove(itr.current);
+		}
+		else if(itr.current.block.length>length){
+			itr.current.block.length -= length;
+			itr.current.block.baseAddress+=length;
+		}
+		return allocated.baseAddress;
+	
+		}
+	
+
 
 	/**
 	 * Frees the memory block whose base address equals the given address.
@@ -95,13 +95,12 @@ public class MemorySpace {
 					"index must be between 0 and size");
 		}
 		ListIterator itr = allocatedList.iterator();
-		while(itr.hasNext()){
-			MemoryBlock block1= itr.next();
-			if(block1.baseAddress==address){
-				freeList.addLast(block1);
-				allocatedList.remove(block1);
-				return;
-			}
+		while(itr.hasNext()&&itr.current.block.baseAddress!= address){
+			 itr.next();
+		}
+		if(itr.current.block.baseAddress==address){
+			freeList.addLast(itr.current.block);
+			allocatedList.remove(itr.current);
 		}
 	}
 	
@@ -120,23 +119,18 @@ public class MemorySpace {
 	 */
 	public void defrag() {
 		int size = freeList.getSize();
-		if(size<2){
-			throw new IllegalArgumentException(
-				"index must be between 0 and size");
-		}
 		Node first1 = freeList.getFirst();
 		Node second = first1.next;
 		MemoryBlock block1 = freeList.getBlock(0);
 		MemoryBlock block2 = freeList.getBlock(1);
 		if(size==2){	
-			if(block1.length + block1.baseAddress != block2.baseAddress){
-				throw new IllegalArgumentException(
-					"index must be between 0 and size");
+			if(block1.length + block1.baseAddress == block2.baseAddress){
+				MemoryBlock block = new MemoryBlock(block1.baseAddress,block1.length+block2.length);
+				freeList.remove(0);
+				freeList.remove(1);
+				freeList.addFirst(block);	
 			}
-			MemoryBlock block = new MemoryBlock(block1.baseAddress,block1.length+block2.length);
-			freeList.remove(0);
-			freeList.remove(1);
-			freeList.addFirst(block);
+			
 		}
 		if(size>2){
 			MemoryBlock block3= freeList.getBlock(2);
